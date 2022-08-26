@@ -1,6 +1,13 @@
 package logRushClient
 
+import "errors"
+
 const DefaultBatchSize = 0
+
+var (
+	ErrStreamExists    = errors.New("stream already exists")
+	ErrStreamNotExists = errors.New("stream already exists")
+)
 
 type ClientOptions struct {
 	DataSourceUrl string
@@ -12,21 +19,13 @@ type LogRushLog struct {
 	Timestamp int64
 }
 
-type LogRushApiStreamResponse struct {
+type ApiStreamResponse struct {
 	Id    string `json:"id"`
 	Alias string `json:"alias"`
 	Key   string `json:"key"`
 }
 
-type LogRushApiSuccessResponse struct {
-	Success bool `json:"success"`
-}
-
-type LogRushApiErrorResponse struct {
-	Message string `json:"message"`
-}
-
-type LogRushApiSuccessOrErrorResponse struct {
+type ApiSuccessOrErrorResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
 }

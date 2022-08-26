@@ -1,6 +1,7 @@
 package logRushClient
 
 import (
+	"errors"
 	"time"
 )
 
@@ -63,15 +64,27 @@ func (s *LogRushStream) Log(msg string) error {
 			}
 			_, err := logRushHttpApi.Batch(s.options.DataSourceUrl, s.id, logs)
 			return err
-
 		}
 	}
 	return nil
 }
 
+func (s *LogRushStream) FlushLogs() error {
+	logs := []LogRushLog{}
+	for i := 0; i < s.options.BatchSize; i++ {
+		logs = append(logs, <-s.logsQueue)
+	}
+	_, err := logRushHttpApi.Batch(s.options.DataSourceUrl, s.id, logs)
+	return err
+}
+
 func (s *LogRushStream) Destroy() error {
 	close(s.logsQueue)
-	_, err := logRushHttpApi.UnregisterStream(s.options.DataSourceUrl, s.id, s.key)
+	response, err := logRushHttpApi.UnregisterStream(s.options.DataSourceUrl, s.id, s.key)
+
+	if response.Message != "" {
+		return errors.New(response.Message)
+	}
 
 	return err
 }

@@ -29,8 +29,8 @@ func (c httpClient) jsonPostRequest(url string, body interface{}, responseInterf
 	return json.Unmarshal(responseBody, responseInterface)
 }
 
-func (c httpClient) RegisterStream(url, name, id, key string) (LogRushApiStreamResponse, error) {
-	streamResponse := LogRushApiStreamResponse{}
+func (c httpClient) RegisterStream(url, name, id, key string) (ApiStreamResponse, error) {
+	streamResponse := ApiStreamResponse{}
 	body := map[string]string{
 		"alias": name,
 		"id":    id,
@@ -41,8 +41,8 @@ func (c httpClient) RegisterStream(url, name, id, key string) (LogRushApiStreamR
 	return streamResponse, err
 }
 
-func (c httpClient) UnregisterStream(url, id, key string) (LogRushApiSuccessOrErrorResponse, error) {
-	streamResponse := LogRushApiSuccessOrErrorResponse{}
+func (c httpClient) UnregisterStream(url, id, key string) (ApiSuccessOrErrorResponse, error) {
+	streamResponse := ApiSuccessOrErrorResponse{}
 	body := map[string]string{
 		"id":  id,
 		"key": key,
@@ -52,8 +52,8 @@ func (c httpClient) UnregisterStream(url, id, key string) (LogRushApiSuccessOrEr
 	return streamResponse, err
 }
 
-func (c httpClient) Log(url, stream string, log LogRushLog) (LogRushApiSuccessOrErrorResponse, error) {
-	streamResponse := LogRushApiSuccessOrErrorResponse{}
+func (c httpClient) Log(url, stream string, log LogRushLog) (ApiSuccessOrErrorResponse, error) {
+	streamResponse := ApiSuccessOrErrorResponse{}
 	body := map[string]interface{}{
 		"stream":    stream,
 		"log":       log.Log,
@@ -64,8 +64,8 @@ func (c httpClient) Log(url, stream string, log LogRushLog) (LogRushApiSuccessOr
 	return streamResponse, err
 }
 
-func (c httpClient) Batch(url, stream string, logs []LogRushLog) (LogRushApiSuccessOrErrorResponse, error) {
-	streamResponse := LogRushApiSuccessOrErrorResponse{}
+func (c httpClient) Batch(url, stream string, logs []LogRushLog) (ApiSuccessOrErrorResponse, error) {
+	streamResponse := ApiSuccessOrErrorResponse{}
 	apiLogs := []map[string]interface{}{}
 
 	for _, log := range logs {
