@@ -1,36 +1,36 @@
 package logRushClient
 
-type LogRushClient struct {
+type Client struct {
 	options ClientOptions
-	streams map[string]LogRushStream
+	streams map[string]Stream
 }
 
-func NewClient(options ClientOptions) LogRushClient {
-	return LogRushClient{
+func NewClient(options ClientOptions) Client {
+	return Client{
 		options: options,
-		streams: map[string]LogRushStream{},
+		streams: map[string]Stream{},
 	}
 }
 
-func (c *LogRushClient) CreateStream(name string) (LogRushStream, error) {
+func (c *Client) CreateStream(name string) (Stream, error) {
 	stream := NewLogStream(c.options, name, "", "")
 	if _, ok := c.streams[stream.id]; ok {
-		return LogRushStream{}, ErrStreamExists
+		return Stream{}, ErrStreamExists
 	}
 	c.streams[stream.id] = stream
 	return stream, nil
 }
 
-func (c *LogRushClient) ResumeStream(name, id, key string) (LogRushStream, error) {
+func (c *Client) ResumeStream(name, id, key string) (Stream, error) {
 	stream := NewLogStream(c.options, name, id, key)
 	if _, ok := c.streams[stream.id]; ok {
-		return LogRushStream{}, ErrStreamExists
+		return Stream{}, ErrStreamExists
 	}
 	c.streams[stream.id] = stream
 	return stream, nil
 }
 
-func (c *LogRushClient) DeleteStream(id string, sendRemainingLogs bool) error {
+func (c *Client) DeleteStream(id string, sendRemainingLogs bool) error {
 	stream, ok := c.streams[id]
 	if !ok {
 		return ErrStreamNotExists
@@ -44,7 +44,7 @@ func (c *LogRushClient) DeleteStream(id string, sendRemainingLogs bool) error {
 	return nil
 }
 
-func (c *LogRushClient) Disconnect(sendRemainingLogs bool) error {
+func (c *Client) Disconnect(sendRemainingLogs bool) error {
 	var err error
 	for _, stream := range c.streams {
 		err = c.DeleteStream(stream.id, sendRemainingLogs)

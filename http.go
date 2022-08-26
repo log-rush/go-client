@@ -52,7 +52,7 @@ func (c httpClient) UnregisterStream(url, id, key string) (ApiSuccessOrErrorResp
 	return streamResponse, err
 }
 
-func (c httpClient) Log(url, stream string, log LogRushLog) (ApiSuccessOrErrorResponse, error) {
+func (c httpClient) Log(url, stream string, log Log) (ApiSuccessOrErrorResponse, error) {
 	streamResponse := ApiSuccessOrErrorResponse{}
 	body := map[string]interface{}{
 		"stream":    stream,
@@ -64,7 +64,7 @@ func (c httpClient) Log(url, stream string, log LogRushLog) (ApiSuccessOrErrorRe
 	return streamResponse, err
 }
 
-func (c httpClient) Batch(url, stream string, logs []LogRushLog) (ApiSuccessOrErrorResponse, error) {
+func (c httpClient) Batch(url, stream string, logs []Log) (ApiSuccessOrErrorResponse, error) {
 	streamResponse := ApiSuccessOrErrorResponse{}
 	apiLogs := []map[string]interface{}{}
 

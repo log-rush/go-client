@@ -14,7 +14,7 @@ type ClientOptions struct {
 	BatchSize     int
 }
 
-type LogRushLog struct {
+type Log struct {
 	Log       string
 	Timestamp int64
 }

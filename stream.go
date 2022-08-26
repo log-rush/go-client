@@ -5,18 +5,18 @@ import (
 	"time"
 )
 
-type LogRushStream struct {
+type Stream struct {
 	options   ClientOptions
-	logsQueue chan LogRushLog
+	logsQueue chan Log
 	name      string
 	id        string
 	key       string
 }
 
-func NewLogStream(options ClientOptions, name, id, key string) LogRushStream {
-	stream := LogRushStream{
+func NewLogStream(options ClientOptions, name, id, key string) Stream {
+	stream := Stream{
 		options:   options,
-		logsQueue: make(chan LogRushLog, options.BatchSize*3),
+		logsQueue: make(chan Log, options.BatchSize*3),
 		name:      name,
 		id:        id,
 		key:       key,
@@ -27,27 +27,27 @@ func NewLogStream(options ClientOptions, name, id, key string) LogRushStream {
 	return stream
 }
 
-func (s *LogRushStream) Id() string {
+func (s *Stream) Id() string {
 	return s.id
 }
 
-func (s *LogRushStream) SecretKey() string {
+func (s *Stream) SecretKey() string {
 	return s.key
 }
 
-func (s *LogRushStream) Name() string {
+func (s *Stream) Name() string {
 	return s.name
 }
 
-func (s *LogRushStream) Register() error {
+func (s *Stream) Register() error {
 	stream, err := logRushHttpApi.RegisterStream(s.options.DataSourceUrl, s.name, s.id, s.key)
 	s.id = stream.Id
 	s.key = stream.Key
 	return err
 }
 
-func (s *LogRushStream) Log(msg string) error {
-	s.logsQueue <- LogRushLog{
+func (s *Stream) Log(msg string) error {
+	s.logsQueue <- Log{
 		Log:       msg,
 		Timestamp: time.Now().UnixMilli(),
 	}
@@ -58,7 +58,7 @@ func (s *LogRushStream) Log(msg string) error {
 			_, err := logRushHttpApi.Log(s.options.DataSourceUrl, s.id, <-s.logsQueue)
 			return err
 		} else {
-			logs := []LogRushLog{}
+			logs := []Log{}
 			for i := 0; i < s.options.BatchSize; i++ {
 				logs = append(logs, <-s.logsQueue)
 			}
@@ -69,8 +69,8 @@ func (s *LogRushStream) Log(msg string) error {
 	return nil
 }
 
-func (s *LogRushStream) FlushLogs() error {
-	logs := []LogRushLog{}
+func (s *Stream) FlushLogs() error {
+	logs := []Log{}
 	for i := 0; i < s.options.BatchSize; i++ {
 		logs = append(logs, <-s.logsQueue)
 	}
@@ -78,7 +78,7 @@ func (s *LogRushStream) FlushLogs() error {
 	return err
 }
 
-func (s *LogRushStream) Destroy() error {
+func (s *Stream) Destroy() error {
 	close(s.logsQueue)
 	response, err := logRushHttpApi.UnregisterStream(s.options.DataSourceUrl, s.id, s.key)
 
